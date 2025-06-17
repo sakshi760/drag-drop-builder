@@ -1,125 +1,91 @@
 const draggables = document.querySelectorAll('.draggable');
 const canvas = document.getElementById('canvas');
-const editor = document.getElementById('editor');
 const editForm = document.getElementById('editForm');
 
+let draggedType = null;
+
+// Handle desktop drag
 draggables.forEach(el => {
   el.addEventListener('dragstart', (e) => {
     e.dataTransfer.setData('type', e.target.dataset.type);
   });
+
+  // Mobile drag logic
+  el.addEventListener('touchstart', (e) => {
+    draggedType = e.target.dataset.type;
+  });
 });
 
-canvas.addEventListener('dragover', (e) => {
-  e.preventDefault();
-});
+canvas.addEventListener('dragover', (e) => e.preventDefault());
 
 canvas.addEventListener('drop', (e) => {
   e.preventDefault();
   const type = e.dataTransfer.getData('type');
-  let newEl;
+  createElement(type);
+});
 
+// Mobile drop
+canvas.addEventListener('touchend', () => {
+  if (draggedType) {
+    createElement(draggedType);
+    draggedType = null;
+  }
+});
+
+function createElement(type) {
+  let newEl;
   switch (type) {
     case 'text':
       newEl = document.createElement('p');
       newEl.textContent = 'Edit me!';
       break;
-
     case 'image':
       newEl = document.createElement('img');
-      newEl.style.width = '150px';
-      newEl.alt = 'Uploaded Image';
-      newEl.style.margin = '10px';
-
-      // Trigger file input
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      fileInput.accept = 'image/*';
-      fileInput.style.display = 'none';
-
-      fileInput.addEventListener('change', () => {
-        const file = fileInput.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            newEl.src = e.target.result;
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      document.body.appendChild(fileInput);
-      fileInput.click();
+      newEl.src = 'https://via.placeholder.com/150';
+      newEl.style.maxWidth = '100px';
       break;
-
     case 'button':
       newEl = document.createElement('button');
       newEl.textContent = 'Click Me';
-      newEl.style.padding = '5px 10px';
       break;
   }
 
   newEl.setAttribute('contenteditable', true);
-  newEl.classList.add('canvas-element');
   newEl.style.margin = '10px';
-
-  newEl.addEventListener('click', () => openEditor(newEl));
-
+  newEl.classList.add('canvas-element');
   canvas.appendChild(newEl);
-});
+  newEl.addEventListener('click', () => openEditor(newEl));
+}
 
 function openEditor(el) {
-  editForm.innerHTML = ''; // Clear previous form
+  editForm.innerHTML = ''; // Clear previous
 
   if (el.tagName === 'P') {
     editForm.innerHTML = `
       <label>Text:</label>
-      <input type="text" value="${el.textContent}" 
-        oninput="this.elementRef.textContent = this.value" />
-      
-      <label>Font Size (px):</label>
-      <input type="number" value="${parseInt(window.getComputedStyle(el).fontSize)}" 
-        oninput="this.elementRef.style.fontSize = this.value + 'px'" />
-      
+      <input type="text" value="${el.textContent}" onchange="this.previousElementSibling.nextElementSibling.value = this.value; el.textContent = this.value" />
+      <label>Font Size:</label>
+      <input type="number" value="16" onchange="el.style.fontSize = this.value + 'px'" />
       <label>Color:</label>
-      <input type="color" value="${rgbToHex(window.getComputedStyle(el).color)}"
-        oninput="this.elementRef.style.color = this.value" />
+      <input type="color" onchange="el.style.color = this.value" />
     `;
   }
 
   if (el.tagName === 'IMG') {
     editForm.innerHTML = `
       <label>Image URL:</label>
-      <input type="text" value="${el.src}" 
-        oninput="this.elementRef.src = this.value" />
+      <input type="text" value="${el.src}" onchange="el.src = this.value" />
       <label>Width (px):</label>
-      <input type="number" value="${el.width}" 
-        oninput="this.elementRef.style.width = this.value + 'px'" />
+      <input type="number" value="${el.width}" onchange="el.width = this.value" />
     `;
   }
 
   if (el.tagName === 'BUTTON') {
     editForm.innerHTML = `
       <label>Button Text:</label>
-      <input type="text" value="${el.textContent}" 
-        oninput="this.elementRef.textContent = this.value" />
-      
-      <label>Background Color:</label>
-      <input type="color" value="${rgbToHex(window.getComputedStyle(el).backgroundColor)}"
-        oninput="this.elementRef.style.backgroundColor = this.value" />
+      <input type="text" value="${el.textContent}" onchange="el.textContent = this.value" />
+      <label>Background:</label>
+      <input type="color" onchange="el.style.background = this.value" />
     `;
   }
-
-  // Assign reference of element to every input so "this.elementRef" works
-  Array.from(editForm.querySelectorAll('input')).forEach(input => {
-    input.elementRef = el;
-  });
-}
-
-// Helper function to convert RGB to HEX
-function rgbToHex(rgb) {
-  const result = rgb.match(/\d+/g);
-  if (!result) return '#000000';
-  return "#" + result.slice(0, 3)
-    .map(x => ("0" + parseInt(x).toString(16)).slice(-2))
-    .join('');
 }
