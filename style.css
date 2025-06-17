@@ -1,0 +1,48 @@
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.builder {
+  display: flex;
+  height: 100vh;
+  flex-wrap: wrap;
+}
+
+.sidebar, .editor {
+  width: 20%;
+  padding: 20px;
+  background: #f0f0f0;
+  min-width: 200px;
+  box-sizing: border-box;
+}
+
+.canvas {
+  flex: 1;
+  background: #fff;
+  border: 2px dashed #ccc;
+  margin: 20px 0;
+  padding: 20px;
+  min-height: 500px;
+  overflow-y: auto;
+}
+
+.draggable {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: grab;
+}
+
+.canvas-element {
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+input, label {
+  display: block;
+  margin: 10px 0 5px;
+  width: 100%;
+}
