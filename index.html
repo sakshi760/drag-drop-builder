@@ -1,26 +1,26 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Drag & Drop Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Drag & Drop Website Builder</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="builder">
     <div class="sidebar">
-      <h2>Elements</h2>
+      <h3>Elements</h3>
       <div class="draggable" draggable="true" data-type="text">Text</div>
       <div class="draggable" draggable="true" data-type="image">Image</div>
       <div class="draggable" draggable="true" data-type="button">Button</div>
     </div>
-    <div id="canvas" class="canvas">Drop elements here</div>
+    <div id="canvas" class="canvas"></div>
     <div id="editor" class="editor">
-      <h3>Edit Properties</h3>
-      <form id="editForm"></form>
+      <h3>Edit Element</h3>
+      <div id="editForm"></div>
     </div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
