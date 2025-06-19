@@ -1,9 +1,8 @@
 const draggables = document.querySelectorAll('.draggable');
 const canvas = document.getElementById('canvas');
-const editor = document.getElementById('editor');
 const editForm = document.getElementById('editForm');
 
-// For desktop
+// Desktop Drag Events
 draggables.forEach(el => {
   el.addEventListener('dragstart', (e) => {
     e.dataTransfer.setData('type', e.target.dataset.type);
@@ -17,27 +16,20 @@ canvas.addEventListener('dragover', (e) => {
 canvas.addEventListener('drop', (e) => {
   e.preventDefault();
   const type = e.dataTransfer.getData('type');
-  createElement(type, e.clientX, e.clientY);
+  createElement(type);
 });
 
-// For touch
+// Touch support (for mobile)
 draggables.forEach(el => {
-  el.addEventListener('touchstart', (e) => {
-    const type = e.target.dataset.type;
-    el.dataset.dragging = "true";
-    el.addEventListener('touchend', (ev) => {
-      const touch = ev.changedTouches[0];
-      const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (dropTarget && dropTarget.id === "canvas") {
-        createElement(type, touch.clientX, touch.clientY);
-      }
-      el.dataset.dragging = "false";
-    }, { once: true });
+  el.addEventListener('click', () => {
+    const type = el.dataset.type;
+    createElement(type);
   });
 });
 
 function createElement(type) {
   let newEl;
+
   switch (type) {
     case 'text':
       newEl = document.createElement('p');
@@ -56,13 +48,14 @@ function createElement(type) {
 
   newEl.setAttribute('contenteditable', true);
   newEl.classList.add('canvas-element');
+  newEl.style.margin = '10px';
   canvas.appendChild(newEl);
 
   newEl.addEventListener('click', () => openEditor(newEl));
 }
 
 function openEditor(el) {
-  editForm.innerHTML = ''; // Clear previous
+  editForm.innerHTML = '';
 
   if (el.tagName === 'P') {
     editForm.innerHTML = `
